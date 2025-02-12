@@ -11,9 +11,9 @@ class Main:
     def run_file(filename):
         try:
             with open(filename, 'r') as file:
-                text = file.read().strip()  # Read the entire file
+                text = file.read().strip()
                 interpreter = Interpreter(text)
-                result = interpreter.expr()
+                result = interpreter.evaluate_expression()
                 print(f"Result: {result}")
         except Exception as e:
             print(f"Error: {e}")

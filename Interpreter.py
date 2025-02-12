@@ -1,124 +1,144 @@
-from Token import MUL, DIV, PLUS, MINUS, INTEGER, Token, EOF
+from Token import LPAREN, MUL, DIV, PLUS, MINUS, INTEGER, RPAREN, Token, EOF
 
 
-class Interpreter(object):
-    def __init__(self, text):
-        self.text = text
-        self.pos = 0
-        self.current_char = self.text[self.pos] if self.text else None
+class Interpreter:
+    def __init__(self, expression):
+        self.expression = expression
+        self.position = 0
+        self.current_character = self.expression[self.position] if self.expression else None
         self.current_token = None
 
-    def error(self):
-        raise Exception('Error parsing input')
+
+    def raise_error(self):
+        raise Exception('Invalid input detected')
 
 
-    def advance(self):
+    def move_next(self):
         """
-        Move to the next character in the input and update `current_char`.
+        Moves to the next character in the input and updates `current_char`.
         """
-        self.pos += 1
-        self.current_char = self.text[self.pos] if self.pos < len(self.text) else None
+        self.position += 1
+        self.current_character = self.expression[self.position] if self.position < len(self.expression) else None
 
 
-    def skip_whitespace(self):
+    def skip_spaces(self):
         """
-        Skip over whitespace characters.
+        Skips whitespace characters.
         """
-        while self.current_char is not None and self.current_char.isspace():
-            self.advance()
+        while self.current_character is not None and self.current_character.isspace():
+            self.move_next()
 
 
-    def integer(self):
+    def read_integer(self):
         """
-        Extract a multi-digit integer from input.
+        Extracts a multi-digit integer from the input.
         """
-        num_str = ''
-        while self.current_char is not None and self.current_char.isdigit():
-            num_str += self.current_char
-            self.advance()
-        return int(num_str)
+        number = ''
+        while self.current_character is not None and self.current_character.isdigit():
+            number += self.current_character
+            self.move_next()
+        return int(number)
+
 
     def get_next_token(self):
         """
-        Lexical analyzer: Extracts tokens from input.
+        Tokenizes the input string.
         """
-        while self.current_char is not None:
+        while self.current_character is not None:
 
-            # Skip whitespace
-            if self.current_char.isspace():
-                self.skip_whitespace()
+            if self.current_character.isspace():
+                self.skip_spaces()
                 continue
 
-            # integer
-            if self.current_char.isdigit():
-                return Token(INTEGER, self.integer())
+            if self.current_character.isdigit():
+                return Token(INTEGER, self.read_integer())
 
-            # Operators
-            if self.current_char == '+':
-                self.advance()
+            if self.current_character == '+':
+                self.move_next()
                 return Token(PLUS, '+')
-            if self.current_char == '-':
-                self.advance()
+            if self.current_character == '-':
+                self.move_next()
                 return Token(MINUS, '-')
-            if self.current_char == '*':
-                self.advance()
+            if self.current_character == '*':
+                self.move_next()
                 return Token(MUL, '*')
-            if self.current_char == '/':
-                self.advance()
+            if self.current_character == '/':
+                self.move_next()
                 return Token(DIV, '/')
+            if self.current_character == '(':
+                self.move_next()
+                return Token(LPAREN, '(')
+            if self.current_character == ')':
+                self.move_next()
+                return Token(RPAREN, ')')
 
-            self.error()
+            self.raise_error()
 
         return Token(EOF, None)
 
-    def eat(self, token_type):
+
+    def consume_token(self, expected_type):
         """
-        Consume the current token if it matches the expected type.
+        Validates and consumes the current token.
         """
-        if self.current_token.type == token_type:
+        if self.current_token.type == expected_type:
             self.current_token = self.get_next_token()
         else:
-            self.error()
+            self.raise_error()
 
-    def factor(self):
+
+    def parse_number(self):
         """
-        factor -> INTEGER
+        Parses and returns an integer value.
         """
         token = self.current_token
-        self.eat(INTEGER)
-        return token.value
 
-    def term(self):
-        """
-        term -> factor ((MUL | DIV) factor)*
-        """
-        result = self.factor()
+        if token.type == INTEGER:
+            self.consume_token(INTEGER)
+            return token.value
 
-        while self.current_token.type in (MUL, DIV):
+        elif token.type == LPAREN:
+            self.consume_token(LPAREN)
+            result = self.parse_arithmetic()
+            self.consume_token(RPAREN)
+            return result
+
+        self.raise_error()
+
+
+    def parse_arithmetic(self):
+        """
+        Parses arithmetic expressions.
+        """
+        result = self.parse_number()
+
+        while self.current_token.type in (MUL, DIV, PLUS, MINUS):
+            
+
             token = self.current_token
             if token.type == MUL:
-                self.eat(MUL)
-                result *= self.factor()
+                self.consume_token(MUL)
+                result *= self.parse_number()
             elif token.type == DIV:
-                self.eat(DIV)
-                result /= self.factor()
+                self.consume_token(DIV)
+                result /= self.parse_number()
+            elif token.type == PLUS:
+                self.consume_token(PLUS)
+                result += self.parse_arithmetic()
+            elif token.type == MINUS:
+                self.consume_token(MINUS)
+                result -= self.parse_arithmetic()
 
         return result
 
-    def expr(self):
+
+    def evaluate_expression(self):
         """
-        expr -> term ((PLUS | MINUS) term)*
+        Parses and evaluates the full arithmetic expression.
         """
         self.current_token = self.get_next_token()
-        result = self.term()
 
-        while self.current_token.type in (PLUS, MINUS):
-            token = self.current_token
-            if token.type == PLUS:
-                self.eat(PLUS)
-                result += self.term()
-            elif token.type == MINUS:
-                self.eat(MINUS)
-                result -= self.term()
+        result = self.parse_arithmetic()
 
         return result
+
