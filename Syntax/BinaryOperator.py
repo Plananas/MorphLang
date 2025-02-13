@@ -1,4 +1,4 @@
-from AbstractSyntaxTree import AbstractSyntaxTree
+from Syntax.AbstractSyntaxTree import AbstractSyntaxTree
 
 class BinaryOperator(AbstractSyntaxTree):
     def __init__(self, left, operator, right):

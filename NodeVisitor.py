@@ -1,7 +1,3 @@
-from AbstractSyntaxTree import AbstractSyntaxTree
-from Token import Token
-
-
 class NodeVisitor(object):
 
     def visit(self, node):

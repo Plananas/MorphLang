@@ -4,9 +4,17 @@ from Interpreter import Interpreter
 from Lexer import Lexer
 from Parser import Parser
 
-
+#Addition Examples
 SIMPLE_ADDITION_FILE = "ExampleCode/SimpleAddition.morph"
+COMPLEX_ADDITION_FILE = "ExampleCode/ComplexAddition.morph"
 
+#Boolean Logic Examples
+BOOLEAN_LOGIC_FILE_ONE = "ExampleCode/BooleanLogic1.morph"
+BOOLEAN_LOGIC_FILE_TWO = "ExampleCode/BooleanLogic2.morph"
+BOOLEAN_LOGIC_FILE_THREE = "ExampleCode/BooleanLogic3.morph"
+BOOLEAN_LOGIC_FILE_FOUR = "ExampleCode/BooleanLogic4.morph"
+BOOLEAN_LOGIC_FILE_FIVE = "ExampleCode/BooleanLogic5.morph"
+BOOlEAN_LOGIC_FILE_SIX = "ExampleCode/BooleanLogic6.morph"
 
 class Main:
     @staticmethod
@@ -30,4 +38,4 @@ if __name__ == "__main__":
     # else:
     #   Main.run_file(sys.argv[1])
 
-    Main.run_file(SIMPLE_ADDITION_FILE)
+    Main.run_file(BOOlEAN_LOGIC_FILE_SIX)

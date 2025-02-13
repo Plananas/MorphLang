@@ -25,6 +25,7 @@ class Lexer(object):
         while self.current_character is not None and self.current_character.isdigit():
             number += self.current_character
             self.move_next()
+
         return int(number)
 
 
@@ -36,14 +37,74 @@ class Lexer(object):
         self.current_character = self.expression[self.position] if self.position < len(self.expression) else None
 
 
+    def get_boolean_token(self):
+        """
+        Tokenizes the boolean operator.
+        """
+        operator = ''
+        while self.current_character is not None and self.isBooleanOperator(self.current_character):
+            operator += self.current_character
+            self.move_next()
+
+        if operator == '==':
+            return Token(Type.EQUALS, operator)
+        elif operator == '!=':
+            return Token(Type.NOT_EQUALS, operator)
+        elif operator == '<':
+            return Token(Type.LESS_THAN, operator)
+        elif operator == '>':
+            return Token(Type.GREATER_THAN, operator)
+        elif operator == '<=':
+            return Token(Type.LESS_THAN_OR_EQUAL, operator)
+        elif operator == '>=':
+            return Token(Type.GREATER_THAN_OR_EQUAL, operator)
+        elif operator == '!':
+            return Token(Type.NOT, operator)
+        elif operator == '&':
+            return Token(Type.AND, operator)
+        elif operator == '&&':
+            return Token(Type.AND, operator)
+        elif operator == '|':
+            return Token(Type.OR, operator)
+        elif operator == '||':
+            return Token(Type.OR, operator)
+
+        self.raise_error()
+
+
+    def get_alpha_token(self):
+        """
+        Tokenizes the alpha character.
+        This will be used for variable declarations, and boolean expressions.
+        """
+        string = ''
+        while self.current_character is not None and self.current_character.isalpha():
+            string += self.current_character
+            self.move_next()
+        if string.lower() == 'true':
+            return Token(Type.TRUE, True)
+
+        elif string.lower() == 'false':
+            return Token(Type.FALSE, False)
+
+        elif string.lower() == 'and':
+            return Token(Type.AND, string)
+
+        elif string.lower() == 'or':
+            return Token(Type.OR, string)
+
+        elif string.lower() == 'not':
+            return Token(Type.NOT, string)
+
+        self.raise_error()
+
+
     def get_next_token(self):
         """
         Tokenizes the input string.
         """
 
-        # FIXME Make this better
         while self.current_character is not None:
-
             if self.current_character.isspace():
                 self.skip_spaces()
                 continue
@@ -51,22 +112,29 @@ class Lexer(object):
             if self.current_character.isdigit():
                 return Token(Type.INTEGER, self.read_integer())
 
-            if self.current_character == '+':
+            elif self.current_character.isalpha():
+                token = self.get_alpha_token()
+                return token
+
+            elif self.isBooleanOperator(self.current_character):
+                return self.get_boolean_token()
+
+            elif self.current_character == '+':
                 self.move_next()
                 return Token(Type.PLUS, '+')
-            if self.current_character == '-':
+            elif self.current_character == '-':
                 self.move_next()
                 return Token(Type.MINUS, '-')
-            if self.current_character == '*':
+            elif self.current_character == '*':
                 self.move_next()
                 return Token(Type.MUL, '*')
-            if self.current_character == '/':
+            elif self.current_character == '/':
                 self.move_next()
                 return Token(Type.DIV, '/')
-            if self.current_character == '(':
+            elif self.current_character == '(':
                 self.move_next()
                 return Token(Type.LPAREN, '(')
-            if self.current_character == ')':
+            elif self.current_character == ')':
                 self.move_next()
                 return Token(Type.RPAREN, ')')
 
@@ -77,3 +145,11 @@ class Lexer(object):
 
     def raise_error(self):
         raise Exception('Invalid input detected')
+
+
+    def isBooleanOperator(self, current_character):
+        operators = ['=', '>', '<', '!', '|', '&']
+        if current_character in operators:
+            return True
+
+        return False

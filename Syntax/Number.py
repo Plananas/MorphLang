@@ -1,4 +1,4 @@
-from AbstractSyntaxTree import AbstractSyntaxTree
+from Syntax.AbstractSyntaxTree import AbstractSyntaxTree
 from Token import Token
 
 
