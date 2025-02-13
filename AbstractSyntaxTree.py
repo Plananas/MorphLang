@@ -1,0 +1,3 @@
+
+class AbstractSyntaxTree(object):
+    pass
