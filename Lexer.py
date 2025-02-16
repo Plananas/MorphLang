@@ -29,6 +29,22 @@ class Lexer(object):
         return int(number)
 
 
+    def read_string(self):
+        """
+        Extracts a string from a string input.
+        """
+        quote_char = self.current_character  # e.g., " or '
+        self.move_next()  # Skip the opening quote
+        string = ''
+        while self.current_character is not None and self.current_character != quote_char:
+            string += self.current_character
+            self.move_next()
+        if self.current_character != quote_char:
+            self.raise_error()  # Or handle unterminated string error
+        self.move_next()  # Skip the closing quote
+        return string
+
+
     def move_next(self):
         """
         Moves to the next character in the input and updates `current_char`.
@@ -98,11 +114,19 @@ class Lexer(object):
 
         self.raise_error()
 
-
     def get_next_token(self):
         """
         Tokenizes the input string.
         """
+        # Mapping for single-character tokens.
+        single_char_tokens = {
+            '+': Type.PLUS,
+            '-': Type.MINUS,
+            '*': Type.MUL,
+            '/': Type.DIV,
+            '(': Type.LPAREN,
+            ')': Type.RPAREN,
+        }
 
         while self.current_character is not None:
             if self.current_character.isspace():
@@ -112,31 +136,21 @@ class Lexer(object):
             if self.current_character.isdigit():
                 return Token(Type.INTEGER, self.read_integer())
 
-            elif self.current_character.isalpha():
-                token = self.get_alpha_token()
-                return token
+            if self.isQuote(self.current_character):
+                return Token(Type.STRING, self.read_string())
 
-            elif self.isBooleanOperator(self.current_character):
+            if self.current_character.isalpha():
+                return self.get_alpha_token()
+
+            if self.isBooleanOperator(self.current_character):
                 return self.get_boolean_token()
 
-            elif self.current_character == '+':
+            # Check for single-character tokens using the mapping.
+            if self.current_character in single_char_tokens:
+                token_type = single_char_tokens[self.current_character]
+                char = self.current_character
                 self.move_next()
-                return Token(Type.PLUS, '+')
-            elif self.current_character == '-':
-                self.move_next()
-                return Token(Type.MINUS, '-')
-            elif self.current_character == '*':
-                self.move_next()
-                return Token(Type.MUL, '*')
-            elif self.current_character == '/':
-                self.move_next()
-                return Token(Type.DIV, '/')
-            elif self.current_character == '(':
-                self.move_next()
-                return Token(Type.LPAREN, '(')
-            elif self.current_character == ')':
-                self.move_next()
-                return Token(Type.RPAREN, ')')
+                return Token(token_type, char)
 
             self.raise_error()
 
@@ -149,6 +163,13 @@ class Lexer(object):
 
     def isBooleanOperator(self, current_character):
         operators = ['=', '>', '<', '!', '|', '&']
+        if current_character in operators:
+            return True
+
+        return False
+
+    def isQuote(self, current_character):
+        operators = ['"', "'"]
         if current_character in operators:
             return True
 

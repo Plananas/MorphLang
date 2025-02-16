@@ -26,6 +26,10 @@ class CharacterType(Enum):
     TRUE = 17
     FALSE = 18
 
+    #String Operations
+    STRING = 19
+
+
     #Other
     EOF = 98
     UNKNOWN = 99

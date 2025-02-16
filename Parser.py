@@ -4,6 +4,7 @@ from Syntax.BooleanExpression import BooleanExpression
 from Syntax.BooleanOperator import BooleanOperator
 from Syntax.BooleanUnaryOperator import BooleanUnaryOperator
 from Syntax.Number              import Number
+from Syntax.String              import String
 from Syntax.UnaryOperator       import UnaryOperator
 
 
@@ -48,6 +49,7 @@ class Parser:
         }
         constants = {
             Type.INTEGER: Number,
+            Type.STRING: String,
             Type.TRUE: BooleanExpression,
             Type.FALSE: BooleanExpression
         }
@@ -90,7 +92,6 @@ class Parser:
             Type.OR: BooleanOperator
         }
 
-        # Allow chaining boolean expressions
         while self.current_token.type in boolean_operators:
             token = self.current_token
             self.consume_token(token.type)

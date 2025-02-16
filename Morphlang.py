@@ -16,6 +16,12 @@ BOOLEAN_LOGIC_FILE_FOUR = "ExampleCode/BooleanLogic4.morph"
 BOOLEAN_LOGIC_FILE_FIVE = "ExampleCode/BooleanLogic5.morph"
 BOOlEAN_LOGIC_FILE_SIX = "ExampleCode/BooleanLogic6.morph"
 
+#String Operations
+STRING_CONCATENATION_FILE = "ExampleCode/StringConcatenation.morph"
+STRING_CONCATENATION_AND_BOOL_OPERATION = "ExampleCode/StringConcatenationBoolOperation.morph"
+STRING_CONCATENATION_AND_BOOL_OPERATION_WITH_NUMBERS = "ExampleCode/StringConcatenationBoolOperationWithNumbers.morph"
+
+
 class Main:
     @staticmethod
     def run_file(filename):
@@ -38,4 +44,4 @@ if __name__ == "__main__":
     # else:
     #   Main.run_file(sys.argv[1])
 
-    Main.run_file(BOOlEAN_LOGIC_FILE_SIX)
+    Main.run_file(COMPLEX_ADDITION_FILE)
