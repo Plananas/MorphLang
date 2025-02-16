@@ -29,6 +29,14 @@ class CharacterType(Enum):
     #String Operations
     STRING = 19
 
+    #Variables
+    IDENTIFIER = 20
+    ASSIGN = 21
+
+    PRINT = 22
+    NEWLINE = 23
+
+    FLOAT = 24
 
     #Other
     EOF = 98

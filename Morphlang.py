@@ -21,6 +21,11 @@ STRING_CONCATENATION_FILE = "ExampleCode/StringConcatenation.morph"
 STRING_CONCATENATION_AND_BOOL_OPERATION = "ExampleCode/StringConcatenationBoolOperation.morph"
 STRING_CONCATENATION_AND_BOOL_OPERATION_WITH_NUMBERS = "ExampleCode/StringConcatenationBoolOperationWithNumbers.morph"
 
+#Variable Assignment
+VARIABLE_ASSIGNMENT_FILE = "ExampleCode/VariableAssignment.morph"
+VARIABLE_ASSIGNMENT_TWO_FILE = "ExampleCode/VariableAssignmentTwo.morph"
+VARIABLE_ASSIGNMENT_THREE_FILE = "ExampleCode/VariableAssignmentThree.morph"
+
 
 class Main:
     @staticmethod
@@ -31,8 +36,7 @@ class Main:
                 lexer = Lexer(text)
                 parser = Parser(lexer)
                 interpreter = Interpreter(parser)
-                result = interpreter.interpret()
-                print(result)
+                interpreter.interpret()
         except Exception as e:
             print(f"Error: {e}")
 
@@ -44,4 +48,4 @@ if __name__ == "__main__":
     # else:
     #   Main.run_file(sys.argv[1])
 
-    Main.run_file(COMPLEX_ADDITION_FILE)
+    Main.run_file(VARIABLE_ASSIGNMENT_THREE_FILE)

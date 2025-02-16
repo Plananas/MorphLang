@@ -1,11 +1,14 @@
 from CharacterType              import CharacterType as Type
+from Syntax.Assignment import Assignment
 from Syntax.BinaryOperator      import BinaryOperator
 from Syntax.BooleanExpression import BooleanExpression
 from Syntax.BooleanOperator import BooleanOperator
 from Syntax.BooleanUnaryOperator import BooleanUnaryOperator
 from Syntax.Number              import Number
+from Syntax.Print               import Print
 from Syntax.String              import String
 from Syntax.UnaryOperator       import UnaryOperator
+from Syntax.Variable                import Variable
 
 
 class Parser:
@@ -36,7 +39,7 @@ class Parser:
         else:
             self.raise_error(expected_type)
 
-    def parse_character(self):
+    def parse_statement(self):
         """
         Parses and returns an integer, boolean, unary, or grouped expression.
         """
@@ -49,6 +52,7 @@ class Parser:
         }
         constants = {
             Type.INTEGER: Number,
+            Type.FLOAT: Number,
             Type.STRING: String,
             Type.TRUE: BooleanExpression,
             Type.FALSE: BooleanExpression
@@ -56,7 +60,7 @@ class Parser:
 
         if token.type in unary_operators:
             self.consume_token(token.type)
-            return unary_operators[token.type](token, self.parse_character())
+            return unary_operators[token.type](token, self.parse_statement())
 
         elif token.type in constants:
             self.consume_token(token.type)
@@ -68,19 +72,56 @@ class Parser:
             self.consume_token(Type.RPAREN)
             return result
 
+        elif self.current_token.type == Type.PRINT:
+            self.consume_token(Type.PRINT)
+            # Optionally, if you want parentheses: check and consume LPAREN here.
+            expression = self.create_expression()
+            # Optionally, if you want to enforce a closing parenthesis, check for RPAREN.
+            return Print(expression)
+
+        elif token.type == Type.IDENTIFIER:
+            variable_token = self.current_token
+            self.consume_token(Type.IDENTIFIER)
+            if self.current_token.type == Type.ASSIGN:
+                self.consume_token(Type.ASSIGN)
+                expression = self.create_expression()
+                return Assignment(variable_token, expression)
+            else:
+                # Not an assignment; treat it as a variable expression
+                return Variable(variable_token)
+
         self.raise_error("an integer, boolean, unary operator, or '('")
+
+
+    def parse_statements(self):
+        """
+        Parses multiple statements separated by newlines.
+        """
+        statements = []
+        while self.current_token.type != Type.EOF:
+            # Skip extra newlines
+            while self.current_token.type == Type.NEWLINE:
+                self.consume_token(Type.NEWLINE)
+            if self.current_token.type == Type.EOF:
+                break
+            statement = self.create_expression()
+            statements.append(statement)
+            # Optionally, consume a newline after each statement
+            if self.current_token.type == Type.NEWLINE:
+                self.consume_token(Type.NEWLINE)
+        return statements
 
     def create_expression(self):
         """
-        Parses expressions with arithmetic and boolean operators.
+        Parses the current token and creates an expression.
         """
-        result = self.parse_character()
+        result = self.parse_statement()
 
         # Process arithmetic operators (*, /, +, -)
         while self.current_token.type in (Type.MUL, Type.DIV, Type.PLUS, Type.MINUS):
             token = self.current_token
             self.consume_token(token.type)
-            result = BinaryOperator(left=result, operator=token, right=self.parse_character())
+            result = BinaryOperator(left=result, operator=token, right=self.parse_statement())
 
         # Process chained boolean comparisons (e.g., 5 - 4 == 3 * 2 == !false)
         boolean_operators = {
@@ -100,9 +141,9 @@ class Parser:
             # Wrap into another BooleanOperator if necessary
             result = BooleanOperator(left=result, operator=token, right=right_expr)
 
-        # Ensure the expression ends correctly (prevents invalid tokens at the end)
-        if self.current_token.type not in (Type.EOF, Type.RPAREN):
-            self.raise_error("an operator or end of expression")
+
+        if self.current_token.type not in (Type.EOF, Type.RPAREN, Type.NEWLINE):
+            self.raise_error("an operator, newline, or end of expression")
 
         return result
 
@@ -112,4 +153,4 @@ class Parser:
         Parses and evaluates the full arithmetic expression.
         """
 
-        return self.create_expression()
+        return self.parse_statements()

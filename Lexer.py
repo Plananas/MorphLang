@@ -16,15 +16,28 @@ class Lexer(object):
         while self.current_character is not None and self.current_character.isspace():
             self.move_next()
 
-
-    def read_integer(self):
+    def read_number(self):
         """
-        Extracts a multi-digit integer from the input.
+        Reads a number from the input. Supports both integers and floats.
+        Returns an int if no decimal point is found, or a float otherwise.
         """
         number = ''
+        # Read the integer part
         while self.current_character is not None and self.current_character.isdigit():
             number += self.current_character
             self.move_next()
+
+        # Check for a decimal point to handle floats
+        if self.current_character == '.':
+            number += self.current_character
+            self.move_next()
+            # Ensure that at least one digit follows the decimal point
+            if self.current_character is None or not self.current_character.isdigit():
+                self.raise_error()  # e.g., "Expected digit after decimal point"
+            while self.current_character is not None and self.current_character.isdigit():
+                number += self.current_character
+                self.move_next()
+            return float(number)
 
         return int(number)
 
@@ -88,31 +101,42 @@ class Lexer(object):
         self.raise_error()
 
 
-    def get_alpha_token(self):
+    def read_identifier(self):
         """
-        Tokenizes the alpha character.
-        This will be used for variable declarations, and boolean expressions.
+        Reads an identifier from the input. An identifier starts with a letter
+        and can contain letters, digits, or underscores.
         """
-        string = ''
-        while self.current_character is not None and self.current_character.isalpha():
-            string += self.current_character
+        identifier = ''
+        while self.current_character is not None and (
+                self.current_character.isalnum() or self.current_character == '_'):
+            identifier += self.current_character
             self.move_next()
-        if string.lower() == 'true':
-            return Token(Type.TRUE, True)
+        return identifier
 
-        elif string.lower() == 'false':
-            return Token(Type.FALSE, False)
 
-        elif string.lower() == 'and':
-            return Token(Type.AND, string)
+    def get_identifier_or_keyword(self):
+        """
+        Tokenizes an identifier or reserved keyword. If the identifier matches a
+        reserved keyword (e.g., 'true', 'false', 'and', 'or', 'not'), return the
+        corresponding token. Otherwise, treat it as a variable identifier.
+        """
+        identifier = self.read_identifier()
+        keywords = {
+            'true': lambda: Token(Type.TRUE, True),
+            'false': lambda: Token(Type.FALSE, False),
+            'and': lambda: Token(Type.AND, identifier),
+            'or': lambda: Token(Type.OR, identifier),
+            'not': lambda: Token(Type.NOT, identifier),
+            'print': lambda: Token(Type.PRINT, identifier)
+        }
 
-        elif string.lower() == 'or':
-            return Token(Type.OR, string)
+        # Check if the identifier is a reserved keyword.
+        if identifier.lower() in keywords:
+            return keywords[identifier.lower()]()
+        # Otherwise, return it as an identifier token.
+        return Token(Type.IDENTIFIER, identifier)
 
-        elif string.lower() == 'not':
-            return Token(Type.NOT, string)
 
-        self.raise_error()
 
     def get_next_token(self):
         """
@@ -130,17 +154,31 @@ class Lexer(object):
 
         while self.current_character is not None:
             if self.current_character.isspace():
+                # If it is a newline, return a NEWLINE token.
+                if self.current_character == '\n':
+                    self.move_next()
+                    return Token(Type.NEWLINE, '\n')
+                # Otherwise, skip spaces and tabs.
                 self.skip_spaces()
                 continue
 
             if self.current_character.isdigit():
-                return Token(Type.INTEGER, self.read_integer())
+                return Token(Type.INTEGER, self.read_number())
 
             if self.isQuote(self.current_character):
                 return Token(Type.STRING, self.read_string())
 
             if self.current_character.isalpha():
-                return self.get_alpha_token()
+                return self.get_identifier_or_keyword()
+
+            # Handle assignment operator '=' separately:
+            if self.current_character == '=':
+                self.move_next()
+                if self.current_character == '=':
+                    self.move_next()
+                    return Token(Type.EQUALS, '==')
+                else:
+                    return Token(Type.ASSIGN, '=')
 
             if self.isBooleanOperator(self.current_character):
                 return self.get_boolean_token()
@@ -162,7 +200,7 @@ class Lexer(object):
 
 
     def isBooleanOperator(self, current_character):
-        operators = ['=', '>', '<', '!', '|', '&']
+        operators = ['>', '<', '!', '|', '&']
         if current_character in operators:
             return True
 

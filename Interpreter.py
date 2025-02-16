@@ -5,20 +5,29 @@ from CharacterType import CharacterType as Type
 class Interpreter(NodeVisitor):
     def __init__(self, parser):
         self.parser = parser
+        self.GLOBAL_SCOPE = {}
+
 
     def visit_BinaryOperator(self, node):
         left = self.visit(node.left)
         right = self.visit(node.right)
         if node.operator.type == Type.PLUS:
+            # Both operands are strings: perform string concatenation.
             if isinstance(left, str) and isinstance(right, str):
-                # String concatenation
                 return left + right
+
+            # Both operands are numbers: perform numerical addition.
             elif isinstance(left, (int, float)) and isinstance(right, (int, float)):
-                # Numerical addition
                 return left + right
+
+            # If one operand is a string and the other a number, raise an error.
+            elif (isinstance(left, str) and isinstance(right, (int, float))) or \
+                    (isinstance(right, str) and isinstance(left, (int, float))):
+                raise Exception("TypeError: Cannot concatenate a string with a number.")
+
+            # Catch any other unsupported operand types.
             else:
-                raise Exception(
-                    "Type Error: '+' operator requires both operands to be of the same type (either both strings or both numbers)")
+                raise Exception("TypeError: Unsupported operand types for + operator.")
 
         elif node.operator.type == Type.MINUS:
             return self.visit(node.left) - self.visit(node.right)
@@ -82,7 +91,27 @@ class Interpreter(NodeVisitor):
         if node.token.type == Type.NOT:
             return not self.visit(node.expression)
 
-    def interpret(self):
-        tree = self.parser.parse()
-        return self.visit(tree)
+    def visit_Assignment(self, node):
+        value = self.visit(node.right)
+        self.GLOBAL_SCOPE[node.left.value] = value
+        return value
 
+    def visit_Variable(self, node):
+        variable_name = node.value
+        if variable_name in self.GLOBAL_SCOPE:
+            return self.GLOBAL_SCOPE[variable_name]
+        else:
+            raise Exception(f"Name Error: Variable '{variable_name}' is not defined")
+
+    def visit_Print(self, node):
+        value = self.visit(node.expression)
+        print(value)
+        return value
+
+    def interpret(self):
+        # 'tree' is a list of AST nodes (statements)
+        tree = self.parser.parse()
+        result = None
+        for statement in tree:
+            result = self.visit(statement)
+        return result
