@@ -135,6 +135,7 @@ class Lexer(object):
         corresponding token. Otherwise, treat it as a variable identifier.
         """
 
+        #TODO add more words to match other languages
         identifier = self.read_identifier()
         keywords = {
             'true': lambda: Token(Type.TRUE, True),
@@ -149,6 +150,7 @@ class Lexer(object):
             'endif': lambda: Token(Type.ENDIF, identifier),
             'while': lambda: Token(Type.WHILE, identifier),
             'endwhile': lambda: Token(Type.END_WHILE, identifier),
+            'ask': lambda: Token(Type.INPUT, identifier),
 
         }
 

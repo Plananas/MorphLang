@@ -4,6 +4,7 @@ from Syntax.BinaryOperator import BinaryOperator
 from Syntax.BooleanExpression import BooleanExpression
 from Syntax.BooleanOperator import BooleanOperator
 from Syntax.BooleanUnaryOperator import BooleanUnaryOperator
+from Syntax.Input import Input
 from Syntax.Number import Number
 from Syntax.Print import Print
 from Syntax.String import String
@@ -76,10 +77,18 @@ class Parser:
 
         elif self.current_token.type == Type.PRINT:
             self.consume_token(Type.PRINT)
-            # Optionally, if you want parentheses: check and consume LPAREN here.
             expression = self.create_expression()
-            # Optionally, if you want to enforce a closing parenthesis, check for RPAREN.
             return Print(expression)
+
+        elif token.type == Type.INPUT:
+            self.consume_token(Type.INPUT)
+            prompt_expr = None
+
+            if self.current_token.type == Type.LPAREN:
+                self.consume_token(Type.LPAREN)
+                prompt_expr = self.create_expression()
+                self.consume_token(Type.RPAREN)
+            return Input(prompt_expr)
 
         elif token.type == Type.IDENTIFIER:
             variable_token = self.current_token
@@ -116,7 +125,6 @@ class Parser:
                 statement = self.create_expression()
                 statements.append(statement)
 
-            # Optionally, consume a newline after each statement
             if self.current_token.type == Type.NEWLINE:
                 self.consume_token(Type.NEWLINE)
         return statements
@@ -181,7 +189,6 @@ class Parser:
             self.consume_token(token.type)
             right_expr = self.create_expression()
 
-            # Wrap into another BooleanOperator if necessary
             result = BooleanOperator(left=result, operator=token, right=right_expr)
 
 

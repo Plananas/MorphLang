@@ -46,6 +46,7 @@ class CharacterType(Enum):
     WHILE = 29
     END_WHILE = 30
 
+    INPUT = 31
 
     #Other
     EOF = 98

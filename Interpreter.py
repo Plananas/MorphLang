@@ -118,6 +118,14 @@ class Interpreter(NodeVisitor):
         return value
 
 
+    def visit_Input(self, node):
+        prompt_text = self.visit(node.prompt) if node.prompt else ""
+
+        # Read user input from the console.
+        user_input = input(prompt_text)
+        return user_input
+
+
     def visit_IfStatement(self, node):
         condition = self.visit(node.condition)
         if condition:
@@ -126,12 +134,14 @@ class Interpreter(NodeVisitor):
             return self.interpret_code_block(node.else_branch)
         pass
 
+
     def visit_WhileLoop(self, node):
         result = None
 
         while self.visit(node.condition):
             result = self.interpret_code_block(node.body)
         return result
+
 
     def interpret(self):
         # 'tree' is a list of AST nodes (statements)
