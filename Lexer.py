@@ -70,16 +70,20 @@ class Lexer(object):
         self.position += 1
         self.current_character = self.expression[self.position] if self.position < len(self.expression) else None
 
-
     def get_boolean_token(self):
         """
         Tokenizes the boolean operator.
         """
-
         operator = ''
 
+        # Read initial operator characters (e.g., '<', '>', '!', '|', '&')
         while self.current_character is not None and self.isBooleanOperator(self.current_character):
             operator += self.current_character
+            self.move_next()
+
+        # Check for composite operators like '<=', '>=', or '!='
+        if operator in ('<', '>', '!') and self.current_character == '=':
+            operator += '='
             self.move_next()
 
         if operator == '==':
@@ -142,7 +146,10 @@ class Lexer(object):
             'if': lambda: Token(Type.IF, identifier),
             'then': lambda: Token(Type.THEN, identifier),
             'else': lambda: Token(Type.ELSE, identifier),
-            'endif': lambda: Token(Type.ENDIF, identifier)
+            'endif': lambda: Token(Type.ENDIF, identifier),
+            'while': lambda: Token(Type.WHILE, identifier),
+            'endwhile': lambda: Token(Type.END_WHILE, identifier),
+
         }
 
         if identifier.lower() in keywords:
@@ -210,8 +217,15 @@ class Lexer(object):
         return Token(Type.EOF, None)
 
 
-    def raise_error(self):
-        raise Exception('Invalid input detected')
+    def raise_error(self, message=None):
+        base_message = "Invalid input detected"
+        if message:
+            base_message = message
+        error_message = f"Lexical error at position {self.position}"
+        if self.current_character is not None:
+            error_message += f" (character: '{self.current_character}')"
+        error_message += f": {base_message}"
+        raise Exception(error_message)
 
 
     def isBooleanOperator(self, current_character):

@@ -10,6 +10,7 @@ from Syntax.String import String
 from Syntax.UnaryOperator import UnaryOperator
 from Syntax.Variable import Variable
 from Syntax.IfStatement import IfStatement
+from Syntax.WhileLoop import WhileLoop
 
 
 class Parser:
@@ -94,7 +95,7 @@ class Parser:
         self.raise_error("an integer, boolean, unary operator, or '('")
 
 
-    def parse_statements(self, break_tokens=(Type.ELSE, Type.ENDIF)):
+    def parse_statements(self, break_tokens=(Type.ELSE, Type.ENDIF, Type.END_WHILE)):
         """
         Parses multiple statements separated by newlines.
         """
@@ -106,8 +107,10 @@ class Parser:
                 self.consume_token(Type.NEWLINE)
             if self.current_token.type == Type.EOF:
                 break
+            if self.current_token.type == Type.WHILE:
+                statements.append(self.parse_while_loop())
 
-            if self.current_token.type == Type.IF:
+            elif self.current_token.type == Type.IF:
                 statements.append(self.parse_if_statement())
             else:
                 statement = self.create_expression()
@@ -134,6 +137,20 @@ class Parser:
                 self.consume_token(Type.ENDIF)
         return IfStatement(condition, then_branch, else_branch)
 
+    def parse_while_loop(self):
+        self.consume_token(Type.WHILE)
+        condition = self.create_expression()
+        body = []
+
+        if self.current_token.type == Type.THEN:
+            self.consume_token(Type.THEN)
+            body = self.parse_statements(break_tokens=(Type.END_WHILE,))
+            if self.current_token.type == Type.END_WHILE:
+                self.consume_token(Type.END_WHILE)
+
+        return WhileLoop(condition, body)
+
+
     def create_expression(self):
         """
         Parses the current token and creates an expression.
@@ -152,6 +169,8 @@ class Parser:
             Type.NOT_EQUALS: BooleanOperator,
             Type.LESS_THAN: BooleanOperator,
             Type.GREATER_THAN: BooleanOperator,
+            Type.LESS_THAN_OR_EQUAL: BooleanOperator,
+            Type.GREATER_THAN_OR_EQUAL: BooleanOperator,
             Type.AND: BooleanOperator,
             Type.OR: BooleanOperator
         }

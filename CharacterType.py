@@ -43,6 +43,9 @@ class CharacterType(Enum):
     ELSE = 27
     ENDIF = 28
 
+    WHILE = 29
+    END_WHILE = 30
+
 
     #Other
     EOF = 98

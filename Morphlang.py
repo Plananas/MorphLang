@@ -29,6 +29,8 @@ VARIABLE_ASSIGNMENT_THREE_FILE = "ExampleCode/VariableAssignmentThree.morph"
 #If Statement Logic
 IF_STATEMENT_FILE = "ExampleCode/IfStatementLogic.morph"
 
+WHILE_LOOP_FILE = "ExampleCode/WhileLoop.morph"
+
 
 class Main:
     @staticmethod
@@ -51,4 +53,4 @@ if __name__ == "__main__":
     # else:
     #   Main.run_file(sys.argv[1])
 
-    Main.run_file(IF_STATEMENT_FILE)
+    Main.run_file(WHILE_LOOP_FILE)

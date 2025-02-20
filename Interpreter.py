@@ -126,6 +126,12 @@ class Interpreter(NodeVisitor):
             return self.interpret_code_block(node.else_branch)
         pass
 
+    def visit_WhileLoop(self, node):
+        result = None
+
+        while self.visit(node.condition):
+            result = self.interpret_code_block(node.body)
+        return result
 
     def interpret(self):
         # 'tree' is a list of AST nodes (statements)
