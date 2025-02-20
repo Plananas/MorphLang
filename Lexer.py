@@ -33,7 +33,7 @@ class Lexer(object):
             self.move_next()
             # Ensure that at least one digit follows the decimal point
             if self.current_character is None or not self.current_character.isdigit():
-                self.raise_error()  # e.g., "Expected digit after decimal point"
+                self.raise_error()
             while self.current_character is not None and self.current_character.isdigit():
                 number += self.current_character
                 self.move_next()
@@ -46,15 +46,19 @@ class Lexer(object):
         """
         Extracts a string from a string input.
         """
-        quote_char = self.current_character  # e.g., " or '
-        self.move_next()  # Skip the opening quote
+
+        quote_char = self.current_character
+        self.move_next()
         string = ''
+
         while self.current_character is not None and self.current_character != quote_char:
             string += self.current_character
             self.move_next()
+
         if self.current_character != quote_char:
-            self.raise_error()  # Or handle unterminated string error
-        self.move_next()  # Skip the closing quote
+            self.raise_error()
+        self.move_next()
+
         return string
 
 
@@ -62,6 +66,7 @@ class Lexer(object):
         """
         Moves to the next character in the input and updates `current_char`.
         """
+
         self.position += 1
         self.current_character = self.expression[self.position] if self.position < len(self.expression) else None
 
@@ -70,7 +75,9 @@ class Lexer(object):
         """
         Tokenizes the boolean operator.
         """
+
         operator = ''
+
         while self.current_character is not None and self.isBooleanOperator(self.current_character):
             operator += self.current_character
             self.move_next()
@@ -106,11 +113,14 @@ class Lexer(object):
         Reads an identifier from the input. An identifier starts with a letter
         and can contain letters, digits, or underscores.
         """
+
         identifier = ''
+
         while self.current_character is not None and (
                 self.current_character.isalnum() or self.current_character == '_'):
             identifier += self.current_character
             self.move_next()
+
         return identifier
 
 
@@ -120,6 +130,7 @@ class Lexer(object):
         reserved keyword (e.g., 'true', 'false', 'and', 'or', 'not'), return the
         corresponding token. Otherwise, treat it as a variable identifier.
         """
+
         identifier = self.read_identifier()
         keywords = {
             'true': lambda: Token(Type.TRUE, True),
@@ -127,13 +138,16 @@ class Lexer(object):
             'and': lambda: Token(Type.AND, identifier),
             'or': lambda: Token(Type.OR, identifier),
             'not': lambda: Token(Type.NOT, identifier),
-            'print': lambda: Token(Type.PRINT, identifier)
+            'print': lambda: Token(Type.PRINT, identifier),
+            'if': lambda: Token(Type.IF, identifier),
+            'then': lambda: Token(Type.THEN, identifier),
+            'else': lambda: Token(Type.ELSE, identifier),
+            'endif': lambda: Token(Type.ENDIF, identifier)
         }
 
-        # Check if the identifier is a reserved keyword.
         if identifier.lower() in keywords:
             return keywords[identifier.lower()]()
-        # Otherwise, return it as an identifier token.
+
         return Token(Type.IDENTIFIER, identifier)
 
 
@@ -142,7 +156,7 @@ class Lexer(object):
         """
         Tokenizes the input string.
         """
-        # Mapping for single-character tokens.
+
         single_char_tokens = {
             '+': Type.PLUS,
             '-': Type.MINUS,
@@ -157,6 +171,7 @@ class Lexer(object):
                 # If it is a newline, return a NEWLINE token.
                 if self.current_character == '\n':
                     self.move_next()
+
                     return Token(Type.NEWLINE, '\n')
                 # Otherwise, skip spaces and tabs.
                 self.skip_spaces()

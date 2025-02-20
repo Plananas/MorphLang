@@ -1,14 +1,15 @@
-from CharacterType              import CharacterType as Type
+from CharacterType import CharacterType as Type
 from Syntax.Assignment import Assignment
-from Syntax.BinaryOperator      import BinaryOperator
+from Syntax.BinaryOperator import BinaryOperator
 from Syntax.BooleanExpression import BooleanExpression
 from Syntax.BooleanOperator import BooleanOperator
 from Syntax.BooleanUnaryOperator import BooleanUnaryOperator
-from Syntax.Number              import Number
-from Syntax.Print               import Print
-from Syntax.String              import String
-from Syntax.UnaryOperator       import UnaryOperator
-from Syntax.Variable                import Variable
+from Syntax.Number import Number
+from Syntax.Print import Print
+from Syntax.String import String
+from Syntax.UnaryOperator import UnaryOperator
+from Syntax.Variable import Variable
+from Syntax.IfStatement import IfStatement
 
 
 class Parser:
@@ -93,23 +94,45 @@ class Parser:
         self.raise_error("an integer, boolean, unary operator, or '('")
 
 
-    def parse_statements(self):
+    def parse_statements(self, break_tokens=(Type.ELSE, Type.ENDIF)):
         """
         Parses multiple statements separated by newlines.
         """
         statements = []
-        while self.current_token.type != Type.EOF:
+        while self.current_token.type != Type.EOF and self.current_token.type not in break_tokens:
+
             # Skip extra newlines
             while self.current_token.type == Type.NEWLINE:
                 self.consume_token(Type.NEWLINE)
             if self.current_token.type == Type.EOF:
                 break
-            statement = self.create_expression()
-            statements.append(statement)
+
+            if self.current_token.type == Type.IF:
+                statements.append(self.parse_if_statement())
+            else:
+                statement = self.create_expression()
+                statements.append(statement)
+
             # Optionally, consume a newline after each statement
             if self.current_token.type == Type.NEWLINE:
                 self.consume_token(Type.NEWLINE)
         return statements
+
+    def parse_if_statement(self):
+        self.consume_token(Type.IF)
+        condition = self.create_expression()
+        then_branch = []
+        else_branch = []
+        if self.current_token.type == Type.THEN:
+            self.consume_token(Type.THEN)
+            then_branch = self.parse_statements(break_tokens=(Type.ELSE, Type.ENDIF))
+
+            if self.current_token.type == Type.ELSE:
+                self.consume_token(Type.ELSE)
+                else_branch = self.parse_statements(break_tokens=(Type.ENDIF,))
+            if self.current_token.type == Type.ENDIF:
+                self.consume_token(Type.ENDIF)
+        return IfStatement(condition, then_branch, else_branch)
 
     def create_expression(self):
         """
@@ -134,6 +157,7 @@ class Parser:
         }
 
         while self.current_token.type in boolean_operators:
+
             token = self.current_token
             self.consume_token(token.type)
             right_expr = self.create_expression()
@@ -142,7 +166,7 @@ class Parser:
             result = BooleanOperator(left=result, operator=token, right=right_expr)
 
 
-        if self.current_token.type not in (Type.EOF, Type.RPAREN, Type.NEWLINE):
+        if self.current_token.type not in (Type.EOF, Type.RPAREN, Type.NEWLINE, Type.THEN, Type.ENDIF):
             self.raise_error("an operator, newline, or end of expression")
 
         return result

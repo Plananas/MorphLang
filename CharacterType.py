@@ -38,6 +38,12 @@ class CharacterType(Enum):
 
     FLOAT = 24
 
+    IF = 25
+    THEN = 26
+    ELSE = 27
+    ENDIF = 28
+
+
     #Other
     EOF = 98
     UNKNOWN = 99

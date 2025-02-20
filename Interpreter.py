@@ -36,17 +36,21 @@ class Interpreter(NodeVisitor):
         elif node.operator.type == Type.DIV:
             return self.visit(node.left) / self.visit(node.right)
 
+
     def visit_Number(self, node):
         return node.value
 
+
     def visit_String(self, node):
         return node.value
+
 
     def visit_UnaryOperator(self, node):
         if node.operator.type == Type.MINUS:
             return -self.visit(node.expression)
         elif node.operator.type == Type.PLUS:
                 return self.visit(node.left) + self.visit(node.right)
+
 
     def visit_BooleanOperator(self, node):
         left = self.visit(node.left)
@@ -81,20 +85,24 @@ class Interpreter(NodeVisitor):
             else:
                 return left or right
 
+
     def visit_BooleanExpression(self, node):
         if node.token.type == Type.TRUE:
             return True
         elif node.token.type == Type.FALSE:
             return False
 
+
     def visit_BooleanUnaryOperator(self, node):
         if node.token.type == Type.NOT:
             return not self.visit(node.expression)
+
 
     def visit_Assignment(self, node):
         value = self.visit(node.right)
         self.GLOBAL_SCOPE[node.left.value] = value
         return value
+
 
     def visit_Variable(self, node):
         variable_name = node.value
@@ -103,15 +111,32 @@ class Interpreter(NodeVisitor):
         else:
             raise Exception(f"Name Error: Variable '{variable_name}' is not defined")
 
+
     def visit_Print(self, node):
         value = self.visit(node.expression)
         print(value)
         return value
 
+
+    def visit_IfStatement(self, node):
+        condition = self.visit(node.condition)
+        if condition:
+            return self.interpret_code_block(node.then_branch)
+        else:
+            return self.interpret_code_block(node.else_branch)
+        pass
+
+
     def interpret(self):
         # 'tree' is a list of AST nodes (statements)
         tree = self.parser.parse()
+        return self.interpret_code_block(tree)
+
+    def interpret_code_block(self, statements):
         result = None
-        for statement in tree:
-            result = self.visit(statement)
+        for statement in statements:
+            result = self.interpret_line_of_code(statement)
         return result
+
+    def interpret_line_of_code(self, statement):
+        return self.visit(statement)

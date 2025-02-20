@@ -26,6 +26,9 @@ VARIABLE_ASSIGNMENT_FILE = "ExampleCode/VariableAssignment.morph"
 VARIABLE_ASSIGNMENT_TWO_FILE = "ExampleCode/VariableAssignmentTwo.morph"
 VARIABLE_ASSIGNMENT_THREE_FILE = "ExampleCode/VariableAssignmentThree.morph"
 
+#If Statement Logic
+IF_STATEMENT_FILE = "ExampleCode/IfStatementLogic.morph"
+
 
 class Main:
     @staticmethod
@@ -48,4 +51,4 @@ if __name__ == "__main__":
     # else:
     #   Main.run_file(sys.argv[1])
 
-    Main.run_file(VARIABLE_ASSIGNMENT_THREE_FILE)
+    Main.run_file(IF_STATEMENT_FILE)
