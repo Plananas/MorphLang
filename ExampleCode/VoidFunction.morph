@@ -1,0 +1,22 @@
+number = 10
+
+
+function testfunction () {
+
+    number = number + 5
+    local_number = number + 10
+    print local_number
+
+}
+
+
+print "before the function was called"
+
+print number
+testfunction()
+
+print "after the function was called"
+
+print number
+
+print local_number

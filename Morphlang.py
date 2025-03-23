@@ -32,6 +32,8 @@ IF_STATEMENT_FILE = "ExampleCode/IfStatementLogic.morph"
 WHILE_LOOP_FILE = "ExampleCode/WhileLoop.morph"
 NESTED = "ExampleCode/Nested.morph"
 
+VOID_FUNCTION = "ExampleCode/VoidFunction.morph"
+
 
 class Main:
     @staticmethod
@@ -48,10 +50,10 @@ class Main:
 
 
 if __name__ == "__main__":
-    # TODO change this so that Morphlang is an executable or bin
+    # TODO change this so that Morphlang is an executable or bin 
     # if len(sys.argv) != 2:
     #     print("Usage: python Morphlang.py <filename>.morph")
     # else:
     #   Main.run_file(sys.argv[1])
 
-    Main.run_file(NESTED)
+    Main.run_file(VOID_FUNCTION)

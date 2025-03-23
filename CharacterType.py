@@ -48,6 +48,15 @@ class CharacterType(Enum):
 
     INPUT = 31
 
+    FUNCTION = 32
+    END_FUNCTION = 33
+    COMMA = 34
+
+    LBRACE = 35
+    RBRACE = 36
+
+    RETURN = 37
+
     #Other
     EOF = 98
     UNKNOWN = 99

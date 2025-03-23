@@ -151,7 +151,8 @@ class Lexer(object):
             'while': lambda: Token(Type.WHILE, identifier),
             'endwhile': lambda: Token(Type.END_WHILE, identifier),
             'ask': lambda: Token(Type.INPUT, identifier),
-
+            'function': lambda: Token(Type.FUNCTION, identifier),
+            'def': lambda: Token(Type.FUNCTION, identifier),
         }
 
         if identifier.lower() in keywords:
@@ -173,6 +174,9 @@ class Lexer(object):
             '/': Type.DIV,
             '(': Type.LPAREN,
             ')': Type.RPAREN,
+            ',': Type.COMMA,
+            '{': Type.LBRACE,
+            '}': Type.RBRACE,
         }
 
         while self.current_character is not None:

@@ -4,6 +4,8 @@ from Syntax.BinaryOperator import BinaryOperator
 from Syntax.BooleanExpression import BooleanExpression
 from Syntax.BooleanOperator import BooleanOperator
 from Syntax.BooleanUnaryOperator import BooleanUnaryOperator
+from Syntax.FunctionCall import FunctionCall
+from Syntax.FunctionDefinition import FunctionDefinition
 from Syntax.Input import Input
 from Syntax.Number import Number
 from Syntax.Print import Print
@@ -93,6 +95,10 @@ class Parser:
         elif token.type == Type.IDENTIFIER:
             variable_token = self.current_token
             self.consume_token(Type.IDENTIFIER)
+
+            if self.current_token.type == Type.LPAREN:
+                return FunctionCall(variable_token.value, '')
+
             if self.current_token.type == Type.ASSIGN:
                 self.consume_token(Type.ASSIGN)
                 expression = self.create_expression()
@@ -104,7 +110,7 @@ class Parser:
         self.raise_error("an integer, boolean, unary operator, or '('")
 
 
-    def parse_statements(self, break_tokens=(Type.ELSE, Type.ENDIF, Type.END_WHILE)):
+    def parse_statements(self, break_tokens=(Type.ELSE, Type.ENDIF, Type.END_WHILE, Type.END_FUNCTION)):
         """
         Parses multiple statements separated by newlines.
         """
@@ -114,13 +120,19 @@ class Parser:
             # Skip extra newlines
             while self.current_token.type == Type.NEWLINE:
                 self.consume_token(Type.NEWLINE)
-            if self.current_token.type == Type.EOF:
+
+            # Re-check break tokens after skipping newlines
+            if self.current_token.type in break_tokens or self.current_token.type == Type.EOF:
                 break
+
             if self.current_token.type == Type.WHILE:
                 statements.append(self.parse_while_loop())
 
             elif self.current_token.type == Type.IF:
                 statements.append(self.parse_if_statement())
+
+            elif self.current_token.type == Type.FUNCTION:
+                statements.append(self.parse_function_definition())
             else:
                 statement = self.create_expression()
                 statements.append(statement)
@@ -128,6 +140,7 @@ class Parser:
             if self.current_token.type == Type.NEWLINE:
                 self.consume_token(Type.NEWLINE)
         return statements
+
 
     def parse_if_statement(self):
         self.consume_token(Type.IF)
@@ -145,6 +158,7 @@ class Parser:
                 self.consume_token(Type.ENDIF)
         return IfStatement(condition, then_branch, else_branch)
 
+
     def parse_while_loop(self):
         self.consume_token(Type.WHILE)
         condition = self.create_expression()
@@ -158,12 +172,41 @@ class Parser:
 
         return WhileLoop(condition, body)
 
+    def parse_function_definition(self):
+        self.consume_token(Type.FUNCTION)
+        name = self.current_token.value
+        self.consume_token(Type.IDENTIFIER)
+
+        # Process the parameter list
+        self.consume_token(Type.LPAREN)
+        parameters = []
+        # Since we don't support parameters yet, expect an immediate closing parenthesis
+        self.consume_token(Type.RPAREN)
+
+        # Process the function body using curly braces
+        self.consume_token(Type.LBRACE)
+        body = self.parse_statements(break_tokens=(Type.RBRACE,))
+        self.consume_token(Type.RBRACE)
+
+        return FunctionDefinition(name, parameters, body)
+
+
+    def parse_function_call(self, function_expression):
+        self.consume_token(Type.LPAREN)
+        arguments = []
+        # For now, we are not processing arguments.
+        self.consume_token(Type.RPAREN)
+        return FunctionCall(function_expression.name, arguments)
+
 
     def create_expression(self):
         """
         Parses the current token and creates an expression.
         """
         result = self.parse_statement()
+
+        while self.current_token.type == Type.LPAREN:
+            result = self.parse_function_call(result)
 
         # Process arithmetic operators (*, /, +, -)
         while self.current_token.type in (Type.MUL, Type.DIV, Type.PLUS, Type.MINUS):
@@ -192,7 +235,7 @@ class Parser:
             result = BooleanOperator(left=result, operator=token, right=right_expr)
 
 
-        if self.current_token.type not in (Type.EOF, Type.RPAREN, Type.NEWLINE, Type.THEN, Type.ENDIF):
+        if self.current_token.type not in (Type.EOF, Type.RPAREN, Type.NEWLINE, Type.THEN, Type.ENDIF, Type.RBRACE):
             self.raise_error("an operator, newline, or end of expression")
 
         return result

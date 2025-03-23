@@ -143,6 +143,38 @@ class Interpreter(NodeVisitor):
         return result
 
 
+    def visit_FunctionDefinition(self, node):
+        function_object = {
+            'name': node.name,
+            'body': node.body,
+            'closure': self.GLOBAL_SCOPE.copy(),
+        }
+
+        self.GLOBAL_SCOPE[node.name] = function_object
+        return function_object
+
+    def visit_FunctionCall(self, node):
+
+        function_object = self.GLOBAL_SCOPE[node.name]
+
+        # Prepare a new local scope from the function's closure.
+        local_scope = function_object['closure'].copy()
+
+        # TODO grab the parameters and add them to the local scope
+
+        # Save the current scope and set the new local scope.
+        previous_scope = self.GLOBAL_SCOPE
+        self.GLOBAL_SCOPE = local_scope
+
+        # Execute the function body within the new scope.
+        result = self.interpret_code_block(function_object['body'])
+
+        # Restore the previous scope.
+        self.GLOBAL_SCOPE = previous_scope
+
+        # For a void function, result might be None.
+        return result
+
     def interpret(self):
         # 'tree' is a list of AST nodes (statements)
         tree = self.parser.parse()
