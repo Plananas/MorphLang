@@ -172,15 +172,24 @@ class Parser:
 
         return WhileLoop(condition, body)
 
+
     def parse_function_definition(self):
         self.consume_token(Type.FUNCTION)
         name = self.current_token.value
         self.consume_token(Type.IDENTIFIER)
 
         # Process the parameter list
-        self.consume_token(Type.LPAREN)
         parameters = []
-        # Since we don't support parameters yet, expect an immediate closing parenthesis
+        self.consume_token(Type.LPAREN)
+        if self.current_token.type != Type.RPAREN:
+            # Add the first parameter
+            parameters.append(self.current_token.value)
+            self.consume_token(Type.IDENTIFIER)
+            # Process any additional parameters separated by commas
+            while self.current_token.type == Type.COMMA:
+                self.consume_token(Type.COMMA)
+                parameters.append(self.current_token.value)
+                self.consume_token(Type.IDENTIFIER)
         self.consume_token(Type.RPAREN)
 
         # Process the function body using curly braces
@@ -190,11 +199,16 @@ class Parser:
 
         return FunctionDefinition(name, parameters, body)
 
-
     def parse_function_call(self, function_expression):
         self.consume_token(Type.LPAREN)
         arguments = []
-        # For now, we are not processing arguments.
+        if self.current_token.type != Type.RPAREN:
+            # Parse the first argument.
+            arguments.append(self.create_expression())
+            # Parse any additional arguments.
+            while self.current_token.type == Type.COMMA:
+                self.consume_token(Type.COMMA)
+                arguments.append(self.create_expression())
         self.consume_token(Type.RPAREN)
         return FunctionCall(function_expression.name, arguments)
 
@@ -235,7 +249,7 @@ class Parser:
             result = BooleanOperator(left=result, operator=token, right=right_expr)
 
 
-        if self.current_token.type not in (Type.EOF, Type.RPAREN, Type.NEWLINE, Type.THEN, Type.ENDIF, Type.RBRACE):
+        if self.current_token.type not in (Type.EOF, Type.RPAREN, Type.NEWLINE, Type.THEN, Type.ENDIF, Type.RBRACE, Type.COMMA):
             self.raise_error("an operator, newline, or end of expression")
 
         return result

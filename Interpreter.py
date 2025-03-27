@@ -156,6 +156,7 @@ class Interpreter(NodeVisitor):
     def visit_FunctionDefinition(self, node):
         function_object = {
             'name': node.name,
+            'parameters': node.parameters,
             'body': node.body,
             'closure': self.SCOPE.copy(),
         }
@@ -164,11 +165,18 @@ class Interpreter(NodeVisitor):
         return function_object
 
     def visit_FunctionCall(self, node):
-
         function_object = self.SCOPE[node.name]
+
+        # Check for correct number of arguments
+        if len(node.parameters) != len(function_object['parameters']):
+            raise Exception("ArgumentError: Incorrect number of arguments provided for function: ", function_object['name'])
 
         # Prepare a new local scope from the function's closure.
         local_scope = function_object['closure'].copy()
+
+        # Bind function parameters to the evaluated arguments
+        for parameter, argument in zip(function_object['parameters'], node.parameters):
+            local_scope[parameter] = self.visit(argument)
 
         # Save the current scope and set the new local scope.
         previous_scope = self.SCOPE
@@ -178,8 +186,8 @@ class Interpreter(NodeVisitor):
         result = self.interpret_code_block(function_object['body'])
 
         self.merge_global_variables(previous_scope)
-
-        # For a void function, result might be None.
+        #TODO add return types
+        # Return the result of the function
         return result
 
     def interpret(self):

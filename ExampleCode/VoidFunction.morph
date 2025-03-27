@@ -1,9 +1,9 @@
 number = 10
 
 
-function testfunction () {
+function testfunction (newnumber, anothernumber, onemorenumber) {
 
-    number = number + 20
+    number = number + newnumber + anothernumber + onemorenumber
     local_number = number + 10
     print local_number
 
@@ -13,7 +13,7 @@ function testfunction () {
 print "before the function was called"
 
 print number
-testfunction()
+testfunction(5, 10, 20)
 
 print "after the function was called"
 
