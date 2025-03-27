@@ -5,7 +5,7 @@ from CharacterType import CharacterType as Type
 class Interpreter(NodeVisitor):
     def __init__(self, parser):
         self.parser = parser
-        self.GLOBAL_SCOPE = {}
+        self.SCOPE = {}
 
 
     def visit_BinaryOperator(self, node):
@@ -100,14 +100,14 @@ class Interpreter(NodeVisitor):
 
     def visit_Assignment(self, node):
         value = self.visit(node.right)
-        self.GLOBAL_SCOPE[node.left.value] = value
+        self.SCOPE[node.left.value] = value
         return value
 
 
     def visit_Variable(self, node):
         variable_name = node.value
-        if variable_name in self.GLOBAL_SCOPE:
-            return self.GLOBAL_SCOPE[variable_name]
+        if variable_name in self.SCOPE:
+            return self.SCOPE[variable_name]
         else:
             raise Exception(f"Name Error: Variable '{variable_name}' is not defined")
 
@@ -128,18 +128,28 @@ class Interpreter(NodeVisitor):
 
     def visit_IfStatement(self, node):
         condition = self.visit(node.condition)
+        previous_scope = self.SCOPE
+        self.SCOPE = self.SCOPE.copy()
+
         if condition:
-            return self.interpret_code_block(node.then_branch)
+            result = self.interpret_code_block(node.then_branch)
         else:
-            return self.interpret_code_block(node.else_branch)
-        pass
+            result = self.interpret_code_block(node.else_branch)
+
+        self.merge_global_variables(previous_scope)
+        return result
 
 
     def visit_WhileLoop(self, node):
         result = None
+        previous_scope = self.SCOPE
+        self.SCOPE = self.SCOPE.copy()
 
         while self.visit(node.condition):
             result = self.interpret_code_block(node.body)
+
+        self.merge_global_variables(previous_scope)
+
         return result
 
 
@@ -147,30 +157,27 @@ class Interpreter(NodeVisitor):
         function_object = {
             'name': node.name,
             'body': node.body,
-            'closure': self.GLOBAL_SCOPE.copy(),
+            'closure': self.SCOPE.copy(),
         }
 
-        self.GLOBAL_SCOPE[node.name] = function_object
+        self.SCOPE[node.name] = function_object
         return function_object
 
     def visit_FunctionCall(self, node):
 
-        function_object = self.GLOBAL_SCOPE[node.name]
+        function_object = self.SCOPE[node.name]
 
         # Prepare a new local scope from the function's closure.
         local_scope = function_object['closure'].copy()
 
-        # TODO grab the parameters and add them to the local scope
-
         # Save the current scope and set the new local scope.
-        previous_scope = self.GLOBAL_SCOPE
-        self.GLOBAL_SCOPE = local_scope
+        previous_scope = self.SCOPE
+        self.SCOPE = local_scope
 
         # Execute the function body within the new scope.
         result = self.interpret_code_block(function_object['body'])
 
-        # Restore the previous scope.
-        self.GLOBAL_SCOPE = previous_scope
+        self.merge_global_variables(previous_scope)
 
         # For a void function, result might be None.
         return result
@@ -188,3 +195,9 @@ class Interpreter(NodeVisitor):
 
     def interpret_line_of_code(self, statement):
         return self.visit(statement)
+
+
+    def merge_global_variables(self, previous_scope):
+        local_scope = self.SCOPE
+
+        self.SCOPE = {key: local_scope[key] if key in local_scope else value for key, value in previous_scope.items()}

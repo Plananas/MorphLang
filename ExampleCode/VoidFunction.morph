@@ -3,7 +3,7 @@ number = 10
 
 function testfunction () {
 
-    number = number + 5
+    number = number + 20
     local_number = number + 10
     print local_number
 
@@ -17,6 +17,7 @@ testfunction()
 
 print "after the function was called"
 
+print 'number after function'
 print number
 
 print local_number

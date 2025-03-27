@@ -3,9 +3,12 @@ conditionTwo = true
 
 if conditionOne then
     print "condition one was true"
+    localvariable = 'test'
     if conditionTwo then
         print "condition one and two were true"
     endif
 else
     print "condition was false"
 endif
+
+print localvariable
