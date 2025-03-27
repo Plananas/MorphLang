@@ -9,6 +9,7 @@ from Syntax.FunctionDefinition import FunctionDefinition
 from Syntax.Input import Input
 from Syntax.Number import Number
 from Syntax.Print import Print
+from Syntax.Return import Return
 from Syntax.String import String
 from Syntax.UnaryOperator import UnaryOperator
 from Syntax.Variable import Variable
@@ -49,6 +50,9 @@ class Parser:
         Parses and returns an integer, boolean, unary, or grouped expression.
         """
         token = self.current_token
+
+        if token.type == Type.RETURN:
+            return self.parse_return_statement()
 
         unary_operators = {
             Type.PLUS: UnaryOperator,
@@ -212,6 +216,12 @@ class Parser:
         self.consume_token(Type.RPAREN)
         return FunctionCall(function_expression.name, arguments)
 
+    def parse_return_statement(self):
+        self.consume_token(Type.RETURN)
+        expression = None
+        if self.current_token.type not in (Type.NEWLINE, Type.RBRACE):
+            expression = self.create_expression()
+        return Return(expression)
 
     def create_expression(self):
         """

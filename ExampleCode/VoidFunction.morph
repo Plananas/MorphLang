@@ -1,23 +1,11 @@
-number = 10
+function addNumbers (firstNumber, secondNumber) {
 
+    newNumber = firstNumber + secondNumber
 
-function testfunction (newnumber, anothernumber, onemorenumber) {
-
-    number = number + newnumber + anothernumber + onemorenumber
-    local_number = number + 10
-    print local_number
-
+    return newNumber
 }
 
+numberOne =  ask("input a number ")
+numberTwo = ask("input another number ")
 
-print "before the function was called"
-
-print number
-testfunction(5, 10, 20)
-
-print "after the function was called"
-
-print 'number after function'
-print number
-
-print local_number
+print addNumbers(numberOne, numberTwo)

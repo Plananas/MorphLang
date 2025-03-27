@@ -153,6 +153,7 @@ class Lexer(object):
             'ask': lambda: Token(Type.INPUT, identifier),
             'function': lambda: Token(Type.FUNCTION, identifier),
             'def': lambda: Token(Type.FUNCTION, identifier),
+            'return': lambda: Token(Type.RETURN, identifier),
         }
 
         if identifier.lower() in keywords:

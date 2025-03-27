@@ -1,5 +1,6 @@
 from NodeVisitor import NodeVisitor
 from CharacterType import CharacterType as Type
+from Syntax.Return import Return
 
 
 class Interpreter(NodeVisitor):
@@ -117,14 +118,18 @@ class Interpreter(NodeVisitor):
         print(value)
         return value
 
-
     def visit_Input(self, node):
         prompt_text = self.visit(node.prompt) if node.prompt else ""
-
-        # Read user input from the console.
         user_input = input(prompt_text)
-        return user_input
 
+        #Convert to int or float to stop them being treated as string concatenations
+        try:
+            if '.' in user_input:
+                return float(user_input)
+            else:
+                return int(user_input)
+        except ValueError:
+            return user_input
 
     def visit_IfStatement(self, node):
         condition = self.visit(node.condition)
@@ -182,13 +187,21 @@ class Interpreter(NodeVisitor):
         previous_scope = self.SCOPE
         self.SCOPE = local_scope
 
-        # Execute the function body within the new scope.
-        result = self.interpret_code_block(function_object['body'])
+        try:
+            # Execute the function body within the new scope.
+            result = self.interpret_code_block(function_object['body'])
+        except Return as return_statement:
+            result = return_statement.value
+
 
         self.merge_global_variables(previous_scope)
-        #TODO add return types
-        # Return the result of the function
         return result
+
+
+    def visit_Return(self, node):
+        value = self.visit(node.value)
+        raise Return(value)
+
 
     def interpret(self):
         # 'tree' is a list of AST nodes (statements)
