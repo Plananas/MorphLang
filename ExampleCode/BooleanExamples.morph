@@ -1,0 +1,28 @@
+# Truthful boolean logic statements
+
+print true == true
+print (5 < 10)
+print true && true
+print (0 < 1) || false
+print false or true
+print ((5 < (3 * 2)) == !false)
+print 10 >= 5
+print 3 <= 3
+print 4 == 4
+print 6 != 10
+print (3 < 5) && (2 < 4)
+print (5 >= 5) || (2 > 10)
+
+# False boolean logic statements
+
+print true == false
+print (5 > 10)
+print true && false
+print (0 > 1) || false
+print false or false
+print ((5 < (3 * 2)) == false)
+print 4 >= 10
+print 2 > 5
+print 10 != 10
+print (3 > 5) & (2 < 4)
+print (1 > 1) | (false && true)

@@ -1,0 +1,30 @@
+# Basic while loop
+number = 0
+while (number <= 2) then
+    print number
+    number = number + 1
+endwhile
+
+# Nested while loop
+outer = 0
+while (outer < 2) then
+    inner = 0
+    while (inner < 2) then
+        print "inner loop"
+        inner = inner + 1
+    endwhile
+    print "outer loop"
+    outer = outer + 1
+endwhile
+
+# While loop with nested if (no modulus)
+count = 0
+while (count < 4) then
+    if count == 0 then
+        print "even"
+    endif
+    if count == 2 then
+        print "even"
+    endif
+    count = count + 1
+endwhile

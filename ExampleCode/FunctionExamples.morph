@@ -1,0 +1,18 @@
+# Function definition
+function addNumbers (firstNumber, secondNumber) {
+    newNumber = firstNumber + secondNumber
+    return newNumber
+}
+
+# Function with literal arguments
+print addNumbers(2, 3)
+print addNumbers(10, 5)
+
+# Function with variables
+x = 7
+y = 8
+result = addNumbers(x, y)
+print result
+
+# Function in expression
+print addNumbers(1, 2) + 10

@@ -1,0 +1,22 @@
+# Check if concatenated string matches expected string
+print "foo" + "bar" == "foobar"
+print "hello" + " " + "world" == "hello world"
+print "123" + "456" == "123456"
+print "abc" + "def" != "abcdefg"
+
+# Check combined expressions
+print ("foo" + "bar") == ("f" + "oo" + "bar")
+print ("x" + "y") != ("X" + "Y")
+
+# Complex logical combinations
+print ("a" + "b" == "ab") and ("c" + "d" == "cd")
+print ("a" + "b" == "ab") or ("c" + "d" == "xx")
+print not ("hello" + "world" == "HELLOWORLD")
+
+# Additional mixed cases
+print "10 corgis" == "10" + " corgis"
+print "10 corgis" != "10" + "corgis"
+print "go" + "od" == "go" + "od"
+print "Corgi" + "Power" == "CorgiPower"
+print "space " + "bar" == "space bar"
+print " space" + "bar" == "spacebar"

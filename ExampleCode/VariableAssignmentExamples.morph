@@ -1,0 +1,38 @@
+# Basic assignment
+x = 5
+print x
+
+# Reassignment with expression
+x = x + 3
+print x
+
+# Another variable
+y = x * 2
+print y
+
+# Updating with previous variables
+z = y - x
+print z
+
+# Chaining variables
+a = 10
+b = a + 1
+c = b * 2
+print a
+print b
+print c
+
+# Overwriting variable
+c = c - a
+print c
+
+# Mixing types
+name = "Morph"
+greeting = "Hello, " + name
+print greeting
+
+# Boolean with variables
+flag = True
+print flag
+flag = not flag
+print flag

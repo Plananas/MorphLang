@@ -168,6 +168,7 @@ class Lexer(object):
         Tokenizes the input string.
         """
 
+        #TODO add comments
         single_char_tokens = {
             '+': Type.PLUS,
             '-': Type.MINUS,
@@ -177,10 +178,17 @@ class Lexer(object):
             ')': Type.RPAREN,
             ',': Type.COMMA,
             '{': Type.LBRACE,
-            '}': Type.RBRACE,
+            '}': Type.RBRACE
         }
 
         while self.current_character is not None:
+
+            if self.current_character == '#':
+                #FIXME this breaks if the comment is the end of file
+                #ignore comments
+                while self.current_character != '\n':
+                    self.move_next()
+
             if self.current_character.isspace():
                 # If it is a newline, return a NEWLINE token.
                 if self.current_character == '\n':

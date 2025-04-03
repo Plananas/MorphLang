@@ -57,8 +57,11 @@ class Interpreter(NodeVisitor):
         left = self.visit(node.left)
         right = self.visit(node.right)
         if node.operator.type in (Type.EQUALS, Type.NOT_EQUALS):
-            # Ensure both operands are of the same type
-            if type(left) != type(right):
+
+            # Allow int and float comparisons
+            if isinstance(left, (int, float)) and isinstance(right, (int, float)):
+                pass
+            elif type(left) != type(right):
                 raise Exception("Type Error: Cannot compare different types")
 
             if node.operator.type == Type.EQUALS:

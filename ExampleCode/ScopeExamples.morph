@@ -1,0 +1,52 @@
+# Global variable
+x = "global"
+print x
+
+# Modify global in if block
+if true then
+    x = "modified in if"
+    local_y = "defined in if"
+    print x
+    print local_y
+endif
+
+print x
+
+
+
+# while block variable
+counter = 0
+while (counter < 1) then
+    z = "inside while"
+    counter = counter + 1
+    print z
+endwhile
+
+
+
+# Function with local variable
+function doSomething() {
+    a = "inside function"
+    print a
+}
+doSomething()
+
+
+
+# Nested function + shared outer scope
+value = 100
+function outer() {
+    value = value + 1
+    print value  # 101
+
+    function inner() {
+        value = value + 1
+        print value  # 102
+    }
+
+    inner()
+    print value  # 102
+}
+
+outer()
+print value

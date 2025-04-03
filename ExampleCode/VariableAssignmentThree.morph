@@ -1,4 +1,0 @@
-errorTest = 5
-errorTest = errorTest + "insert string here"
-
-print errorTest

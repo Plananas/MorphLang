@@ -1,0 +1,13 @@
+# Basic string concatenation
+print "Hello" + "World"
+
+# Add space between words
+print "Hello" + " " + "World"
+
+# Longer sentence build-up
+print "This " + "is " + "a " + "sentence."
+
+# Edge case: empty strings
+print "" + "Non-empty"
+print "Non-empty" + ""
+print "" + ""

@@ -6,18 +6,14 @@ from Parser import Parser
 
 #Addition Examples
 SIMPLE_ADDITION_FILE = "ExampleCode/SimpleAddition.morph"
-COMPLEX_ADDITION_FILE = "ExampleCode/ComplexAddition.morph"
+COMPLEX_ADDITION_FILE = "ExampleCode/MathExamples.morph"
 
 #Boolean Logic Examples
-BOOLEAN_LOGIC_FILE_ONE = "ExampleCode/BooleanLogic1.morph"
-BOOLEAN_LOGIC_FILE_TWO = "ExampleCode/BooleanLogic2.morph"
-BOOLEAN_LOGIC_FILE_THREE = "ExampleCode/BooleanLogic3.morph"
-BOOLEAN_LOGIC_FILE_FOUR = "ExampleCode/BooleanLogic4.morph"
-BOOLEAN_LOGIC_FILE_FIVE = "ExampleCode/BooleanLogic5.morph"
-BOOlEAN_LOGIC_FILE_SIX = "ExampleCode/BooleanLogic6.morph"
+BOOLEAN_EXAMPLES = "ExampleCode/BooleanExamples.morph"
+
 
 #String Operations
-STRING_CONCATENATION_FILE = "ExampleCode/StringConcatenation.morph"
+STRING_CONCATENATION_FILE = "ExampleCode/StringConcatenationExamples.morph"
 STRING_CONCATENATION_AND_BOOL_OPERATION = "ExampleCode/StringConcatenationBoolOperation.morph"
 STRING_CONCATENATION_AND_BOOL_OPERATION_WITH_NUMBERS = "ExampleCode/StringConcatenationBoolOperationWithNumbers.morph"
 
@@ -35,7 +31,7 @@ NESTED = "ExampleCode/Nested.morph"
 VOID_FUNCTION = "ExampleCode/VoidFunction.morph"
 
 
-class Main:
+class Morphlang:
     @staticmethod
     def run_file(filename):
         try:
@@ -56,4 +52,4 @@ if __name__ == "__main__":
     # else:
     #   Main.run_file(sys.argv[1])
 
-    Main.run_file(VOID_FUNCTION)
+    Morphlang.run_file(BOOLEAN_EXAMPLES)

@@ -57,6 +57,8 @@ class CharacterType(Enum):
 
     RETURN = 37
 
+    COMMENT = 38
+
     #Other
     EOF = 98
     UNKNOWN = 99

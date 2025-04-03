@@ -1,0 +1,50 @@
+# Basic if/else structure
+if true then
+    print "True block"
+endif
+
+if false then
+    print "This won't print"
+endif
+
+# If with variables
+x = 10
+if x > 5 then
+    print "x is greater than 5"
+endif
+
+if x < 5 then
+    print "x is less than 5"
+endif
+
+# Nested if statements
+if x > 0 then
+    print "x is positive"
+    if x > 5 then
+        print "x is also greater than 5"
+        if x == 10 then
+            print "x is exactly 10"
+        endif
+    endif
+endif
+
+
+# Nested with else
+y = 6
+if y > 0 then
+    if y < 5 then
+        print "y is small"
+    else
+        print "y is big"
+    endif
+else
+    print "y is not positive"
+endif
+
+
+# FIXME This doesn't work
+if (y / 2) == 3 then
+    print "Not Else"
+else
+    print "Is Else"
+endif

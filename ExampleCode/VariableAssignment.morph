@@ -1,4 +1,0 @@
-quickMaths = 10
-quickMaths = quickMaths + 2
-
-print quickMaths
