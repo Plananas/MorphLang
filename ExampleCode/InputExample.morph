@@ -1,0 +1,6 @@
+# Basic while loop
+number = ask("number 1: ")
+
+numberTwo = ask("number 2: ")
+
+print number + numberTwo

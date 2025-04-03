@@ -4,32 +4,6 @@ from Interpreter import Interpreter
 from Lexer import Lexer
 from Parser import Parser
 
-#Addition Examples
-SIMPLE_ADDITION_FILE = "ExampleCode/SimpleAddition.morph"
-COMPLEX_ADDITION_FILE = "ExampleCode/MathExamples.morph"
-
-#Boolean Logic Examples
-BOOLEAN_EXAMPLES = "ExampleCode/BooleanExamples.morph"
-
-
-#String Operations
-STRING_CONCATENATION_FILE = "ExampleCode/StringConcatenationExamples.morph"
-STRING_CONCATENATION_AND_BOOL_OPERATION = "ExampleCode/StringConcatenationBoolOperation.morph"
-STRING_CONCATENATION_AND_BOOL_OPERATION_WITH_NUMBERS = "ExampleCode/StringConcatenationBoolOperationWithNumbers.morph"
-
-#Variable Assignment
-VARIABLE_ASSIGNMENT_FILE = "ExampleCode/VariableAssignment.morph"
-VARIABLE_ASSIGNMENT_TWO_FILE = "ExampleCode/VariableAssignmentTwo.morph"
-VARIABLE_ASSIGNMENT_THREE_FILE = "ExampleCode/VariableAssignmentThree.morph"
-
-#If Statement Logic
-IF_STATEMENT_FILE = "ExampleCode/IfStatementLogic.morph"
-
-WHILE_LOOP_FILE = "ExampleCode/WhileLoop.morph"
-NESTED = "ExampleCode/Nested.morph"
-
-VOID_FUNCTION = "ExampleCode/VoidFunction.morph"
-
 
 class Morphlang:
     @staticmethod
@@ -52,4 +26,4 @@ if __name__ == "__main__":
     # else:
     #   Main.run_file(sys.argv[1])
 
-    Morphlang.run_file(BOOLEAN_EXAMPLES)
+    Morphlang.run_file("ExampleCode/InputExample.morph")
