@@ -20,10 +20,8 @@ class Morphlang:
 
 
 if __name__ == "__main__":
-    # TODO change this so that Morphlang is an executable or bin 
-    # if len(sys.argv) != 2:
-    #     print("Usage: python Morphlang.py <filename>.morph")
-    # else:
-    #   Main.run_file(sys.argv[1])
+    if len(sys.argv) != 2:
+        print("Usage: python Morphlang.py <filename.morph>")
+        sys.exit(1)
 
-    Morphlang.run_file("ExampleCode/InputExample.morph")
+    Morphlang.run_file(sys.argv[1])
