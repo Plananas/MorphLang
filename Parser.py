@@ -33,7 +33,7 @@ class Parser:
 
     def parse_statements(self, break_tokens=(Type.ELSE, Type.ENDIF, Type.END_WHILE, Type.END_FUNCTION)):
         """
-        Parses multiple statements separated by newlines.
+        Parses a block of statements until a break token or EOF is reached.
         """
         statements = []
         while self.current_token.type != Type.EOF and self.current_token.type not in break_tokens:
@@ -63,6 +63,9 @@ class Parser:
 
 
     def parse_statement(self):
+        """
+        Parses a single statement such as print, input, assignment, return, or function call.
+        """
         token = self.current_token
 
         if token.type == Type.RETURN:
@@ -104,6 +107,9 @@ class Parser:
 
 
     def parse_if_statement(self):
+        """
+        Parses an if else statement with conditional branches.
+        """
         self.consume_token(Type.IF)
         condition = self.create_expression()
         then_branch = []
@@ -124,6 +130,9 @@ class Parser:
 
 
     def parse_while_loop(self):
+        """
+        Parses a while-do loop with a condition and body.
+        """
         self.consume_token(Type.WHILE)
         condition = self.create_expression()
         body = []
@@ -139,6 +148,9 @@ class Parser:
 
 
     def parse_function_definition(self):
+        """
+        Parses a function definition including name, parameters, and body.
+        """
         self.consume_token(Type.FUNCTION)
         name = self.current_token.value
         self.consume_token(Type.IDENTIFIER)
@@ -163,6 +175,9 @@ class Parser:
 
 
     def parse_function_call(self, function_expression):
+        """
+        Parses a function call with arguments.
+        """
         self.consume_token(Type.LPAREN)
         arguments = []
 
@@ -179,6 +194,9 @@ class Parser:
 
 
     def parse_return_statement(self):
+        """
+        Parses a return statement with an optional expression.
+        """
         self.consume_token(Type.RETURN)
         expression = None
 
@@ -189,11 +207,16 @@ class Parser:
 
 
     def create_expression(self):
-
+        """
+        Parses the top-level expression.
+        """
         return self.parse_boolean_or()
 
 
     def parse_boolean_or(self):
+        """
+        Parses a logical OR expression.
+        """
         node = self.parse_boolean_and()
 
         while self.current_token.type == Type.OR:
@@ -205,6 +228,9 @@ class Parser:
 
 
     def parse_boolean_and(self):
+        """
+        Parses a logical AND expression.
+        """
         node = self.parse_equality()
 
         while self.current_token.type == Type.AND:
@@ -215,6 +241,9 @@ class Parser:
         return node
 
     def parse_equality(self):
+        """
+        Parses equality expressions.
+        """
         node = self.parse_comparison()
 
         while self.current_token.type in (Type.EQUALS, Type.NOT_EQUALS):
@@ -226,6 +255,9 @@ class Parser:
 
 
     def parse_comparison(self):
+        """
+        Parses relational comparison expressions.
+        """
         node = self.parse_term()
 
         while self.current_token.type in (
@@ -239,6 +271,9 @@ class Parser:
         return node
 
     def parse_term(self):
+        """
+        Parses addition and subtraction expressions.
+        """
         node = self.parse_factor()
 
         while self.current_token.type in (Type.PLUS, Type.MINUS):
@@ -250,6 +285,9 @@ class Parser:
 
 
     def parse_factor(self):
+        """
+        Parses multiplication and division expressions.
+        """
         node = self.parse_unary()
 
         while self.current_token.type in (Type.MUL, Type.DIV):
@@ -261,7 +299,9 @@ class Parser:
 
 
     def parse_unary(self):
-
+        """
+        Parses unary operators
+        """
         if self.current_token.type in (Type.PLUS, Type.MINUS, Type.NOT):
             token = self.current_token
             self.consume_token(token.type)
@@ -278,6 +318,9 @@ class Parser:
 
 
     def parse_primary(self):
+        """
+        Parses primary expressions such as variables
+        """
         token = self.current_token
 
         if token.type == Type.INTEGER or token.type == Type.FLOAT:
@@ -320,6 +363,9 @@ class Parser:
 
 
     def consume_token(self, expected_type):
+        """
+        Advances the current token if it matches the expected type, else raises a syntax error.
+        """
 
         if self.current_token.type == expected_type:
             self.current_token = self.lexer.get_next_token()
@@ -329,6 +375,9 @@ class Parser:
 
 
     def raise_error(self, expected_type=None):
+        """
+        Raises a syntax error with detailed information about the unexpected token.
+        """
         error_message = f"Syntax Error: Unexpected token '{self.current_token.value}' ({self.current_token.type})"
 
         if expected_type:

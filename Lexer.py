@@ -168,7 +168,6 @@ class Lexer(object):
         Tokenizes the input string.
         """
 
-        #TODO add comments
         single_char_tokens = {
             '+': Type.PLUS,
             '-': Type.MINUS,
